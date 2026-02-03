@@ -1,0 +1,66 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RoomStatus {
+  AVAILABLE
+  OCCUPIED
+}
+
+enum TransactionStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  password       String
+  name           String
+  kostName       String
+  whatsappNumber String
+  rooms          Room[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Room {
+  id         String     @id @default(uuid())
+  roomNumber String
+  price      Int
+  status     RoomStatus @default(AVAILABLE)
+  userId     String
+  user       User       @relation(fields: [userId], references: [id])
+  tenant     Tenant?
+}
+
+model Tenant {
+  id           String        @id @default(uuid())
+  name         String
+  phoneNumber  String
+  startDate    DateTime
+  roomId       String        @unique
+  room         Room          @relation(fields: [roomId], references: [id])
+  transactions Transaction[]
+}
+
+model Transaction {
+  id           String            @id @default(uuid())
+  month        Int
+  year         Int
+  amount       Int
+  status       TransactionStatus @default(PENDING)
+  dueDate      DateTime
+  paymentProof String?           // URL dari Supabase Storage
+  paidAt       DateTime?
+  tenantId     String
+  tenant       Tenant            @relation(fields: [tenantId], references: [id])
+  createdAt    DateTime          @default(now())
+}
