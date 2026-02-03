@@ -9,9 +9,13 @@ import Image from "next/image"
  * Halaman Publik untuk Penyewa
  * Tidak memerlukan autentikasi
  */
-export default async function PublicPaymentPage({ params }: { params: { token: string } }) {
+
+export default async function PublicPaymentPage(props: { params: Promise<{ token: string }> }) {
+
+  const params = await props.params;
+  const token = params.token;
   const transaction = await prisma.transaction.findUnique({
-    where: { token: params.token },
+    where: { token: token },
     include: {
       tenant: {
         include: { room: true }
@@ -19,7 +23,7 @@ export default async function PublicPaymentPage({ params }: { params: { token: s
     }
   })
 
-  if (!transaction) return notFound()
+  if (!transaction) return notFound();
 
   const formatIDR = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
