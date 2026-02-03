@@ -8,7 +8,7 @@ const menuItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
   { icon: DoorOpen, label: "Kamar", href: "/dashboard/rooms" },
   { icon: Users, label: "Penghuni", href: "/dashboard/tenants" },
-  { icon: Receipt, label: "Tagihan", href: "/dashboard/invoices" },
+  { icon: Receipt, label: "Tagihan", href: "/dashboard/transactions" },
   { icon: Settings, label: "Pengaturan", href: "/dashboard/settings" },
 ]
 

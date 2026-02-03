@@ -18,7 +18,7 @@ import { Room } from "@prisma/client"
 
 /**
  * Komponen Modal untuk proses Check-in penghuni baru ke kamar tertentu.
- * Mengupdate data penghuni dan status kamar secara atomik.
+ * Mengupdate data penghuni, status kamar, dan membuat tagihan awal secara atomik.
  */
 export function CheckInForm({ room }: { room: Room }) {
   const [open, setOpen] = useState(false)
@@ -51,6 +51,9 @@ export function CheckInForm({ room }: { room: Room }) {
           </DialogDescription>
         </DialogHeader>
         <form action={handleSubmit} className="space-y-4 pt-4">
+          {/* Hidden input untuk mengirim harga kamar ke Server Action */}
+          <input type="hidden" name="price" value={room.price} />
+
           <div className="space-y-2">
             <Label htmlFor="name">Nama Penghuni</Label>
             <Input id="name" name="name" placeholder="Nama Lengkap" required />

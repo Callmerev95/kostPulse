@@ -5,17 +5,19 @@ import { revalidatePath } from "next/cache";
 import { RoomStatus } from "@prisma/client";
 
 /**
- * Mencatat penghuni baru dan mengubah status kamar menjadi OCCUPIED.
- * Menggunakan transaksi database untuk menjamin konsistensi data.
+ * Mencatat penghuni baru, update status kamar, dan BUAT TAGIHAN OTOMATIS.
  */
 export async function createTenant(formData: FormData, roomId: string) {
   const name = formData.get("name") as string;
   const phoneNumber = formData.get("phoneNumber") as string;
+  const price = parseInt(formData.get("price") as string);
+
+  const now = new Date();
 
   try {
     await prisma.$transaction(async (tx) => {
       // 1. Simpan data penghuni baru
-      await tx.tenant.create({
+      const newTenant = await tx.tenant.create({
         data: {
           name,
           phoneNumber,
@@ -29,17 +31,30 @@ export async function createTenant(formData: FormData, roomId: string) {
         where: { id: roomId },
         data: { status: RoomStatus.OCCUPIED },
       });
+
+      // 3. Buat Tagihan Otomatis untuk bulan pertama
+      await tx.transaction.create({
+        data: {
+          tenantId: newTenant.id,
+          amount: price,
+          month: now.getMonth() + 1, // getMonth() itu 0-11
+          year: now.getFullYear(),
+          status: "PENDING",
+          dueDate: new Date(now.getFullYear(), now.getMonth(), 10), // Contoh: Jatuh tempo setiap tanggal 10
+        },
+      });
     });
 
     // Refresh data di kedua halaman terkait
+    revalidatePath("/dashboard/transactions");
     revalidatePath("/dashboard/rooms");
     revalidatePath("/dashboard/tenants");
     revalidatePath("/dashboard");
 
     return { success: true };
   } catch (error) {
-    console.error("Error creating tenant:", error);
-    return { error: "Gagal menambahkan penghuni." };
+    console.error("Error creating tenant & transaction:", error);
+    return { error: "Gagal memproses check-in dan tagihan." };
   }
 }
 
