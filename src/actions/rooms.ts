@@ -33,3 +33,32 @@ export async function createRoom(formData: FormData, userId: string) {
   // Membersihkan cache agar data terbaru muncul di dashboard
   revalidatePath("/dashboard/rooms");
 }
+
+/**
+ * Memperbarui data kamar yang sudah ada.
+ */
+export async function updateRoom(id: string, formData: FormData) {
+  const roomNumber = formData.get("roomNumber") as string;
+  const price = parseInt(formData.get("price") as string);
+
+  await prisma.room.update({
+    where: { id },
+    data: {
+      roomNumber,
+      price,
+    },
+  });
+
+  revalidatePath("/dashboard/rooms");
+}
+
+/**
+ * Menghapus data kamar dari database.
+ */
+export async function deleteRoom(id: string) {
+  await prisma.room.delete({
+    where: { id },
+  });
+
+  revalidatePath("/dashboard/rooms");
+}

@@ -1,7 +1,7 @@
 import { getRooms } from "@/actions/rooms"
 import { AddRoomForm } from "@/components/shared/AddRoomForm"
+import { RoomActions } from "@/components/shared/RoomActions"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase-server"
 import { redirect } from "next/navigation"
 
@@ -50,7 +50,7 @@ export default async function RoomsPage() {
                 <TableCell>Rp {room.price.toLocaleString("id-ID")}</TableCell>
                 <TableCell>{room.status}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm">Edit</Button>
+                  <RoomActions room={room} />
                 </TableCell>
               </TableRow>
             ))}
