@@ -1,5 +1,7 @@
 import Link from "next/link"
 import { LayoutDashboard, DoorOpen, Users, Receipt, Settings } from "lucide-react"
+import { signOut } from "@/actions/auth"
+import { LogOut } from "lucide-react"
 
 // Menu navigasi dashboard
 const menuItems = [
@@ -26,6 +28,19 @@ export function Sidebar() {
           </Link>
         ))}
       </nav>
+
+      {/* Area Bawah: Logout */}
+      <div className="pt-4 mt-4 border-t">
+        <form action={signOut}>
+          <button
+            type="submit"
+            className="flex w-full items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors font-medium"
+          >
+            <LogOut size={20} />
+            <span>Keluar</span>
+          </button>
+        </form>
+      </div>
     </aside>
   )
 }
