@@ -62,7 +62,12 @@ export default async function TransactionsPage() {
                 </TableCell>
                 <TableCell className="text-right">
                   {/* Di sini variabel 't' sudah tersedia dari .map() */}
-                  <TransactionActions id={t.id} status={t.status} />
+                  <TransactionActions
+                    id={t.id}
+                    status={t.status}
+                    hasProof={!!t.paymentProof}
+                    proofUrl={t.paymentProof}
+                    tenantName={t.tenant.name} />
                 </TableCell>
               </TableRow>
             ))}
