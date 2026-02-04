@@ -15,6 +15,7 @@ import {
 import { UserPlus } from "lucide-react"
 import { useState } from "react"
 import { Room } from "@prisma/client"
+import { toast } from "sonner";
 
 /**
  * Komponen Modal untuk proses Check-in penghuni baru ke kamar tertentu.
@@ -32,8 +33,13 @@ export function CheckInForm({ room }: { room: Room }) {
 
     if (result.success) {
       setOpen(false)
+      toast.success("Check-in berhasil diproses!", {
+        description: `Penghuni baru telah ditambahkan ke kamar ${room.roomNumber}, dan tagihan bulanan ini telah dibuat.`,
+      })
     } else {
-      alert(result.error)
+      toast.error("Proses Gagal", {
+        description: result.error || "Terjadi kesalahan sistem, Silakan coba lagi.",
+      })
     }
   }
 
