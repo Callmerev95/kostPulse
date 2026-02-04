@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { checkOutTenant } from "@/actions/tenants"
 import { useState } from "react"
+import { toast } from "sonner";
 
 interface TenantActionsProps {
   tenantId: string
@@ -19,14 +20,26 @@ export function TenantActions({ tenantId, roomId, tenantName }: TenantActionsPro
   const [isLoading, setIsLoading] = useState(false)
 
   const handleCheckOut = async () => {
-    if (confirm(`Apakah Anda yakin ingin melakukan Check-out untuk ${tenantName}? Kamar akan otomatis tersedia kembali.`)) {
-      setIsLoading(true)
-      const result = await checkOutTenant(tenantId, roomId)
-      setIsLoading(false)
+    const isConfirmed = confirm(
+      `Apakah Anda yakin ingin melakukan Check-out untuk ${tenantName}? \nSeluruh data transaksi terkait juga akan dihapus.`
+    )
 
-      if (result?.error) {
-        alert(result.error)
-      }
+    if (!isConfirmed) return
+
+    setIsLoading(true)
+    const result = await checkOutTenant(tenantId, roomId)
+    setIsLoading(false)
+
+    if (result.success) {
+      // Notifikasi sukses 
+      toast.success("Check-out Berhasil", {
+        description: `${tenantName} telah keluar dan kamar kini tersedia kembali.`,
+      })
+    } else {
+      // Notifikasi error jika terjadi kendala (termasuk foreign key violation)
+      toast.error("Gagal Check-out", {
+        description: result.error || "Terjadi kesalahan saat memproses data.",
+      })
     }
   }
 
@@ -36,7 +49,7 @@ export function TenantActions({ tenantId, roomId, tenantName }: TenantActionsPro
       size="sm"
       onClick={handleCheckOut}
       disabled={isLoading}
-      className="flex items-center gap-2"
+      className="flex items-center gap-2 transition-all active:scale-95"
     >
       <LogOut size={14} />
       {isLoading ? "Memproses..." : "Check-out"}

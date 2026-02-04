@@ -106,12 +106,14 @@ export async function getTenants(userId: string) {
 export async function checkOutTenant(tenantId: string, roomId: string) {
   try {
     await prisma.$transaction(async (tx) => {
-      // 1. Hapus tenant
+      await tx.transaction.deleteMany({
+        where: { tenantId: tenantId },
+      });
+
       await tx.tenant.delete({
         where: { id: tenantId },
       });
 
-      // 2. Kembalikan status kamar ke AVAILABLE
       await tx.room.update({
         where: { id: roomId },
         data: { status: RoomStatus.AVAILABLE },
@@ -120,6 +122,7 @@ export async function checkOutTenant(tenantId: string, roomId: string) {
 
     revalidatePath("/dashboard/tenants");
     revalidatePath("/dashboard/rooms");
+    revalidatePath("/dashboard/transactions"); 
     revalidatePath("/dashboard");
 
     return { success: true };
