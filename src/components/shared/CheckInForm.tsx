@@ -34,11 +34,11 @@ export function CheckInForm({ room }: { room: Room }) {
     if (result.success) {
       setOpen(false)
       toast.success("Check-in berhasil diproses!", {
-        description: `Penghuni baru telah ditambahkan ke kamar ${room.roomNumber}, dan tagihan bulanan ini telah dibuat.`,
+        description: `Penghuni baru atas nama ${formData.get("name")} telah ditambahkan ke kamar ${room.roomNumber}, dan tagihan bulanan ini telah dibuat.`,
       })
     } else {
-      toast.error("Proses Gagal", {
-        description: result.error || "Terjadi kesalahan sistem, Silakan coba lagi.",
+      toast.error(result.error || "Proses Gagal", {
+        description: result.description || "Terjadi kesalahan sistem, Silakan coba lagi.",
       })
     }
   }

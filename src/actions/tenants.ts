@@ -22,12 +22,24 @@ export async function createTenant(formData: FormData) {
   const phoneNumber = formData.get("phoneNumber") as string;
   const price = parseInt(formData.get("price") as string);
   const roomId = formData.get("roomId") as string;
-
   const now = new Date();
+
+  const phoneRegex = /^(08|628)[0-9]{8,12}$/;
+
+  if (!phoneRegex.test(phoneNumber)) {
+    return {
+      error: "Format Nomor Hp Salah!",
+      description:
+        "Nomor harus diawali dengan 08 atau 628 dan minimal 10 digit.",
+    };
+  }
+
+  if (!roomId) {
+    return { error: "ID Kamar tidak ditemukan" };
+  }
 
   try {
     await prisma.$transaction(async (tx) => {
-      // 2. Simpan data penghuni baru (WAJIB sertakan userId)
       const newTenant = await tx.tenant.create({
         data: {
           name,
@@ -66,7 +78,7 @@ export async function createTenant(formData: FormData) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error creating tenant & transaction:", error);
+    console.error("Error:", error);
     return { error: "Gagal memproses check-in dan tagihan." };
   }
 }
