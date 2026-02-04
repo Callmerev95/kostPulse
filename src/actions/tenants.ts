@@ -34,7 +34,7 @@ export async function createTenant(formData: FormData) {
           phoneNumber,
           startDate: new Date(),
           roomId,
-          userId: authUser.id, // FIX: TypeScript tidak akan protes lagi
+          userId: authUser.id,
         },
       });
 

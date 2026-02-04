@@ -26,7 +26,8 @@ export function CheckInForm({ room }: { room: Room }) {
 
   async function handleSubmit(formData: FormData) {
     setIsLoading(true)
-    const result = await createTenant(formData, room.id)
+    formData.append("roomId", room.id)
+    const result = await createTenant(formData)
     setIsLoading(false)
 
     if (result.success) {
