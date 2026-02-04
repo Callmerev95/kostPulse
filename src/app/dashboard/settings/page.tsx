@@ -18,6 +18,9 @@ export default async function SettingsPage() {
       bankName: true,
       accountNumber: true,
       accountName: true,
+      ewalletName: true,
+      ewalletNumber: true,
+      qrisImage: true,
     }
   })
 

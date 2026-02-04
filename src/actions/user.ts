@@ -2,26 +2,39 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase-server";
 
-export async function updateSettings(userId: string, formData: FormData) {
+export async function updateSettings(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
+  if (!authUser) return { error: "Unauthorized" };
+
+  //const name = formData.get("name") as string;
+  const bankName = formData.get("bankName") as string;
+  const accountNumber = formData.get("accountNumber") as string;
+  const accountName = formData.get("accountName") as string;
+  const ewalletName = formData.get("ewalletName") as string | null;
+  const ewalletNumber = formData.get("ewalletNumber") as string | null;
+  const qrisImage = formData.get("qrisImage") as string | null;
+
   try {
-    const bankName = formData.get("bankName") as string;
-    const accountNumber = formData.get("accountNumber") as string;
-    const accountName = formData.get("accountName") as string;
-
-    // Update data user di database
     await prisma.user.update({
-      where: { id: userId },
+      where: { id: authUser.id },
       data: {
-        bankName,
-        accountNumber,
-        accountName,
+        bankName: bankName || null,
+        accountNumber: accountNumber || null,
+        accountName: accountName || null,
+        ewalletName: ewalletName || null,
+        ewalletNumber: ewalletNumber || null,
+        qrisImage: qrisImage || null,
       },
     });
 
     // Beritahu Next.js untuk memperbarui tampilan yang menggunakan data ini
     revalidatePath("/dashboard/settings");
-    revalidatePath("/pay"); // Revalidate semua halaman di bawah /pay juga
+    revalidatePath("/pay/[token]", "page");
 
     return { success: true };
   } catch (error) {
