@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { UploadProofModal } from "@/components/shared/UploadProofModal"
+import { CopyButton } from "@/components/shared/CopyButton"
 import Image from "next/image"
 
 /**
@@ -12,18 +13,24 @@ import Image from "next/image"
 
 export default async function PublicPaymentPage(props: { params: Promise<{ token: string }> }) {
 
-  const params = await props.params;
-  const token = params.token;
+
+  const { token } = await props.params;
   const transaction = await prisma.transaction.findUnique({
-    where: { token: token },
+    where: { token },
     include: {
       tenant: {
-        include: { room: true }
+        include:
+        {
+          room: true,
+          user: true
+        }
       }
     }
   })
 
-  if (!transaction) return notFound();
+  if (!transaction || !transaction.tenant) return notFound();
+
+  const owner = transaction.tenant.user;
 
   const formatIDR = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -35,61 +42,75 @@ export default async function PublicPaymentPage(props: { params: Promise<{ token
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center border-b bg-white rounded-t-xl">
-          <CardTitle className="text-xl font-bold">Detail Tagihan</CardTitle>
-          <p className="text-sm text-slate-500">{transaction.tenant.room.roomNumber}</p>
+      <Card className="w-full max-w-md shadow-lg border-none">
+        <CardHeader className="text-center border-b bg-white rounded-t-xl py-8">
+          <Badge className="mb-2" variant="outline">{owner.kostName}</Badge>
+          <CardTitle className="text-2xl font-black tracking-tight">Tagihan Pembayaran</CardTitle>
+          <p className="text-sm text-slate-500">Kamar {transaction.tenant.room.roomNumber}</p>
         </CardHeader>
 
-        <CardContent className="pt-6 space-y-6">
-          <div className="flex justify-between items-center">
-            <span className="text-slate-500">Status</span>
-            <Badge variant={transaction.status === "PAID" ? "outline" : "destructive"}>
-              {transaction.status}
-            </Badge>
-          </div>
-
-          <div className="space-y-1">
-            <p className="text-sm text-slate-500">Nama Penghuni</p>
-            <p className="font-semibold">{transaction.tenant.name}</p>
-          </div>
-
-          <div className="space-y-1">
-            <p className="text-sm text-slate-500">Periode</p>
-            <p className="font-semibold">Bulan {transaction.month}, {transaction.year}</p>
-          </div>
-
-          <div className="pt-4 border-t">
-            <div className="flex justify-between items-center">
-              <span className="text-lg font-bold">Total Tagihan</span>
-              <span className="text-xl font-black text-blue-600">
-                {formatIDR(transaction.amount)}
-              </span>
+        <CardContent className="p-6 space-y-6">
+          {/* Detail Transaksi */}
+          <div className="flex justify-between items-end pb-4 border-b border-dashed">
+            <div>
+              <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Periode</p>
+              <p className="font-semibold text-slate-700">{transaction.month}, {transaction.year}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Total</p>
+              <p className="text-2xl font-black text-blue-600">{formatIDR(transaction.amount)}</p>
             </div>
           </div>
 
-          {/* Logika Tampilan Bukti / Tombol Upload */}
-          <div className="pt-6">
+          {/* INSTRUKSI PEMBAYARAN (DINAMIS) */}
+          {!transaction.paymentProof && (
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 space-y-3">
+              <p className="text-sm font-bold text-blue-900 flex items-center gap-2">
+                🏦 Instruksi Pembayaran
+              </p>
+
+              {owner.bankName ? (
+                <div className="space-y-3 bg-white p-4 rounded-lg border border-blue-200">
+                  <div>
+                    <p className="text-[10px] text-slate-400 uppercase font-bold">Bank / E-Wallet</p>
+                    <p className="font-bold text-slate-800">{owner.bankName}</p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase font-bold">Nomor Rekening</p>
+                      <p className="font-mono text-lg font-bold text-blue-700">{owner.accountNumber}</p>
+                    </div>
+                    {/* Komponen Copy Button */}
+                    <CopyButton text={owner.accountNumber || ""} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-400 uppercase font-bold">Atas Nama</p>
+                    <p className="font-medium text-slate-700">{owner.accountName}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-blue-700 italic">Silakan hubungi owner untuk detail rekening.</p>
+              )}
+            </div>
+          )}
+
+          {/* Upload Section */}
+          <div className="pt-2">
             {transaction.paymentProof ? (
-              <div className="space-y-3">
-                <p className="text-sm font-medium text-center text-green-600">Bukti bayar sudah diunggah</p>
-                <div className="relative aspect-video rounded-lg border overflow-hidden">
-                  <Image
-                    src={transaction.paymentProof}
-                    alt="Bukti Bayar"
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-green-600 justify-center bg-green-50 py-2 rounded-full border border-green-100">
+                  <span className="text-sm font-bold uppercase tracking-wide">Sudah Dibayar</span>
+                </div>
+                <div className="relative aspect-video rounded-xl border overflow-hidden shadow-inner bg-slate-100">
+                  <Image src={transaction.paymentProof} alt="Bukti" fill className="object-cover" unoptimized />
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-                  Silakan lakukan transfer ke rekening Owner dan unggah bukti pembayarannya di bawah ini.
+                <div className="text-center">
+                  <p className="text-xs text-slate-400 mb-4">Pastikan nominal sesuai sebelum upload bukti transfer</p>
+                  <UploadProofModal transactionId={transaction.id} />
                 </div>
-                {/* Kita gunakan modal upload yang sudah ada */}
-                <UploadProofModal transactionId={transaction.id} />
               </div>
             )}
           </div>

@@ -30,6 +30,7 @@ model User {
   accountNumber  String?   // Contoh: 123456789
   accountName    String?   // Contoh: Rev
   rooms          Room[]
+  tenants      Tenant[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt 
 }
@@ -53,6 +54,8 @@ model Tenant {
   startDate    DateTime
   roomId       String        @unique
   room         Room          @relation(fields: [roomId], references: [id])
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
   transactions Transaction[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
