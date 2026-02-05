@@ -2,9 +2,10 @@
 
 import * as React from "react"
 import { useState } from "react"
+import { useRouter } from "next/navigation" // Tambahkan ini
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { signUpSchema } from "@/lib/zod" // Menggunakan skema yang sudah kita buat
+import { signUpSchema } from "@/lib/zod"
 import * as z from "zod"
 import { signUp } from "@/actions/auth"
 import { Button } from "@/components/ui/button"
@@ -13,14 +14,13 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { Loader2, UserPlus, Eye, EyeOff } from "lucide-react"
 
-// Ambil tipe data dari skema kita (Standard Industri: No manual types!)
 type SignUpInput = z.infer<typeof signUpSchema>
 
 export function RegisterForm() {
+  const router = useRouter() // Inisialisasi router
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
-  // Inisialisasi React Hook Form dengan Zod
   const {
     register,
     handleSubmit,
@@ -31,21 +31,25 @@ export function RegisterForm() {
 
   async function onSubmit(data: SignUpInput) {
     setIsLoading(true)
-
-    // Konversi object data ke FormData untuk Server Action
     const formData = new FormData()
     Object.entries(data).forEach(([key, value]) => formData.append(key, value))
 
     try {
-      const result = (await signUp(formData)) as { error?: string } | undefined;
+      const result = (await signUp(formData)) as { success?: boolean; error?: string; message?: string };
+
       if (result?.error) {
         toast.error(result.error)
-      } else {
-        toast.success("Registrasi berhasil! Selamat bergabung di KostFlow.")
+        setIsLoading(false)
+      } else if (result?.success) {
+        toast.success(result.message || "Registrasi berhasil! Selamat bergabung di KostFlow.")
+
+        // Jeda 3 detik agar user sempat membaca instruksi cek email
+        setTimeout(() => {
+          router.push("/login")
+        }, 3000)
       }
     } catch {
       toast.error("Terjadi kesalahan sistem. Silakan coba lagi.")
-    } finally {
       setIsLoading(false)
     }
   }
@@ -60,6 +64,7 @@ export function RegisterForm() {
               <Input
                 {...register("name")}
                 placeholder="Budi Santoso"
+                disabled={isLoading}
                 className={`h-11 focus-visible:ring-[#D4AF37] ${errors.name ? "border-red-500" : ""}`}
               />
               {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name.message}</p>}
@@ -69,6 +74,7 @@ export function RegisterForm() {
               <Input
                 {...register("whatsappNumber")}
                 placeholder="0812..."
+                disabled={isLoading}
                 className={`h-11 focus-visible:ring-[#D4AF37] ${errors.whatsappNumber ? "border-red-500" : ""}`}
               />
               {errors.whatsappNumber && <p className="text-xs text-red-500 font-medium">{errors.whatsappNumber.message}</p>}
@@ -80,6 +86,7 @@ export function RegisterForm() {
             <Input
               {...register("kostName")}
               placeholder="Kost Elite Menteng"
+              disabled={isLoading}
               className={`h-11 focus-visible:ring-[#D4AF37] ${errors.kostName ? "border-red-500" : ""}`}
             />
             {errors.kostName && <p className="text-xs text-red-500 font-medium">{errors.kostName.message}</p>}
@@ -91,6 +98,7 @@ export function RegisterForm() {
               {...register("email")}
               type="email"
               placeholder="nama@email.com"
+              disabled={isLoading}
               className={`h-11 focus-visible:ring-[#D4AF37] ${errors.email ? "border-red-500" : ""}`}
             />
             {errors.email && <p className="text-xs text-red-500 font-medium">{errors.email.message}</p>}
@@ -102,6 +110,7 @@ export function RegisterForm() {
               <Input
                 {...register("password")}
                 type={showPassword ? "text" : "password"}
+                disabled={isLoading}
                 className={`h-11 pr-10 focus-visible:ring-[#D4AF37] ${errors.password ? "border-red-500" : ""}`}
               />
               <button

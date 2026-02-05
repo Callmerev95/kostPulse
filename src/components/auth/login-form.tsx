@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useState } from "react"
+import { useRouter } from "next/navigation" // Tambahkan ini
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema } from "@/lib/zod"
@@ -16,6 +17,7 @@ import { Loader2, LogIn, Eye, EyeOff } from "lucide-react"
 type LoginInput = z.infer<typeof loginSchema>
 
 export function LoginForm() {
+  const router = useRouter() // Inisialisasi router
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
@@ -33,17 +35,23 @@ export function LoginForm() {
     Object.entries(data).forEach(([key, value]) => formData.append(key, value))
 
     try {
-      const response = await signIn(formData)
-      const result = response as { error?: string } | undefined
+      // Sesuai update di auth.ts, signIn mengembalikan object
+      const result = await signIn(formData) as { success?: boolean; error?: string; message?: string }
 
       if (result?.error) {
         toast.error(result.error)
-      } else {
-        toast.success("Akses diberikan. Selamat datang di KostFlow!")
+        setIsLoading(false) // Stop loading hanya jika error
+      } else if (result?.success) {
+        toast.success(result.message || "Akses diberikan. Selamat datang di KostFlow!")
+
+        // Jeda 1.5 detik untuk memunculkan Toast sebelum redirect
+        setTimeout(() => {
+          router.push("/dashboard")
+          router.refresh()
+        }, 1500)
       }
     } catch {
       toast.error("Terjadi masalah pada koneksi server.")
-    } finally {
       setIsLoading(false)
     }
   }
@@ -59,6 +67,7 @@ export function LoginForm() {
               id="email"
               placeholder="nama@email.com"
               type="email"
+              disabled={isLoading}
               className={`h-11 focus-visible:ring-[#D4AF37] ${errors.email ? "border-red-500" : ""}`}
             />
             {errors.email && <p className="text-xs text-red-500 font-medium">{errors.email.message}</p>}
@@ -66,7 +75,7 @@ export function LoginForm() {
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <a href="#" className="text-xs font-bold text-[#D4AF37] hover:text-[#C5A028]">
+              <a href="/forgot-password" className="text-xs font-bold text-[#D4AF37] hover:text-[#C5A028]">
                 Lupa password?
               </a>
             </div>
@@ -75,12 +84,13 @@ export function LoginForm() {
                 {...register("password")}
                 id="password"
                 type={showPassword ? "text" : "password"}
+                disabled={isLoading}
                 className={`h-11 pr-10 focus-visible:ring-[#D4AF37] ${errors.password ? "border-red-500" : ""}`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#D4AF37]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#D4AF37] transition-colors"
                 tabIndex={-1}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
