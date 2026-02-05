@@ -48,7 +48,7 @@ export default async function DashboardLayout({
   const kostName = profile?.kostName || "KostFlow Residence";
 
   return (
-    <div className="flex min-h-screen bg-[#0F0F0F] text-white">
+    <div className="flex h-screen overflow-hidden bg-[#0F0F0F] text-white">
       {/* Sidebar Desktop (Hidden di Mobile) */}
       <div className="hidden lg:block">
         <Sidebar userName={userName} kostName={kostName} />
