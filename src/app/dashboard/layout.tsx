@@ -73,8 +73,8 @@ export default async function DashboardLayout({
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden">
-          <div className="p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#0F0F0F] pb-28 lg:pb-2">
+          <div className="p-4 md:p-8 max-w-400 mx-auto w-full">
             {children}
           </div>
         </main>

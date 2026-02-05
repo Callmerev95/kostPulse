@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { HeaderSection } from "@/components/dashboard/header-section";
 import { StatsGrid } from "@/components/dashboard/stats-grid";
 import { RevenueChart } from "@/components/dashboard/revenue-chart"
+import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { prisma } from "@/lib/prisma";
 
 export default async function DashboardPage() {
@@ -38,20 +39,13 @@ export default async function DashboardPage() {
 
       {/* Grid untuk Chart & Activity */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* CHART: Ambil 2 kolom di desktop */}
         <div className="lg:col-span-2">
           <RevenueChart />
         </div>
 
-        {/* RECENT ACTIVITY: Ambil 1 kolom */}
-        <div className="bg-white/2 border border-white/5 rounded-[2rem] p-6">
-          <h3 className="text-lg font-black tracking-tight text-white mb-6">Aktivitas Terbaru</h3>
-          {/* Kita akan isi di step berikutnya */}
-          <div className="space-y-4">
-            <p className="text-white/20 text-xs font-bold uppercase tracking-widest text-center py-10">
-              Processing feeds...
-            </p>
-          </div>
+        {/* RECENT ACTIVITY */}
+        <div className="h-full">
+          <RecentActivity />
         </div>
       </div>
     </div>
