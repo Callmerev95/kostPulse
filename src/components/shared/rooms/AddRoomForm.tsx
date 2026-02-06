@@ -23,7 +23,7 @@ interface ActionResponse {
 
 export function AddRoomForm({ userId }: { userId: string }) {
   const [open, setOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false) // Tambah state loading
+  const [isLoading, setIsLoading] = useState(false)
 
   async function handleSubmit(formData: FormData) {
     setIsLoading(true)
@@ -34,7 +34,6 @@ export function AddRoomForm({ userId }: { userId: string }) {
       loading: 'Mendaftarkan unit baru...',
       success: (res) => {
         if (res?.error) throw new Error(res.error)
-
         setOpen(false)
         return `Kamar ${roomNumber} berhasil ditambahkan!`
       },
@@ -49,11 +48,24 @@ export function AddRoomForm({ userId }: { userId: string }) {
 
   return (
     <Dialog open={open} onOpenChange={(val) => !isLoading && setOpen(val)}>
+      {/* 🖥️ Desktop Trigger: Tetap di Header */}
       <DialogTrigger asChild>
-        <Button className="bg-[#D4AF37] hover:bg-[#F9E498] text-black font-black px-6 rounded-xl flex items-center gap-2 transition-all shadow-[0_10px_20px_rgba(212,175,55,0.2)] active:scale-95">
+        <Button className="hidden md:flex bg-[#D4AF37] hover:bg-[#F9E498] text-black font-black px-6 rounded-xl items-center gap-2 transition-all shadow-[0_10px_20px_rgba(212,175,55,0.2)] active:scale-95 border-none">
           <Plus size={18} strokeWidth={3} /> Tambah Unit
         </Button>
       </DialogTrigger>
+
+      {/* 📱 Mobile Trigger: Floating Action Button (FAB) 
+          Posisinya di pojok kanan bawah, di atas BottomNav
+      */}
+      <DialogTrigger asChild>
+        <Button
+          className="md:hidden fixed bottom-28 right-6 h-14 w-14 rounded-2xl bg-[#D4AF37] hover:bg-[#F9E498] text-black shadow-[0_8px_30px_rgba(212,175,55,0.4)] z-50 border-none transition-all active:scale-90 flex items-center justify-center p-0"
+        >
+          <Plus size={28} strokeWidth={3} />
+        </Button>
+      </DialogTrigger>
+
       <DialogContent
         className="bg-[#0A0A0A] border-white/10 rounded-[2.5rem] text-white sm:max-w-md focus:outline-none"
         onPointerDownOutside={(e) => isLoading && e.preventDefault()}
@@ -67,41 +79,44 @@ export function AddRoomForm({ userId }: { userId: string }) {
             Masukkan detail unit kost untuk mulai disewakan.
           </DialogDescription>
         </DialogHeader>
+
         <form action={handleSubmit} className="space-y-5 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="roomNumber" className="text-xs font-bold uppercase tracking-widest text-white/60 pl-1">
-              <HousePlus color="#D4AF37" size={12} />Nomor Kamar
+            <Label htmlFor="roomNumber" className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 pl-1 flex items-center gap-2">
+              <HousePlus color="#D4AF37" size={14} /> Nomor Kamar
             </Label>
             <Input
               id="roomNumber"
               name="roomNumber"
               placeholder="Contoh: A-01"
-              className="bg-white/5 border-white/10 rounded-xl focus:border-[#D4AF37]/50 h-12 transition-all disabled:opacity-50"
+              className="bg-white/5 border-white/10 rounded-xl focus:border-[#D4AF37]/50 h-12 transition-all disabled:opacity-50 placeholder:text-white/10"
               required
               disabled={isLoading}
             />
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="price" className="text-xs font-bold uppercase tracking-widest text-white/60 pl-1">
-              <Tag color="#D4AF37" size={12} />Harga Sewa / Bulan
+            <Label htmlFor="price" className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 pl-1 flex items-center gap-2">
+              <Tag color="#D4AF37" size={14} /> Harga Sewa / Bulan
             </Label>
             <Input
               id="price"
               name="price"
               type="number"
               placeholder="1500000"
-              className="bg-white/5 border-white/10 rounded-xl focus:border-[#D4AF37]/50 h-12 transition-all disabled:opacity-50"
+              className="bg-white/5 border-white/10 rounded-xl focus:border-[#D4AF37]/50 h-12 transition-all disabled:opacity-50 placeholder:text-white/10"
               required
               disabled={isLoading}
             />
           </div>
+
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#D4AF37] hover:bg-[#F9E498] text-black font-black rounded-xl py-6 mt-2 transition-all shadow-[0_10px_20px_rgba(212,175,55,0.2)] flex items-center justify-center gap-2 disabled:opacity-70"
+            className="w-full bg-[#D4AF37] hover:bg-[#F9E498] text-black font-black rounded-xl py-6 mt-2 transition-all shadow-[0_10px_20px_rgba(212,175,55,0.2)] flex items-center justify-center gap-2 disabled:opacity-70 border-none"
           >
-            {isLoading ? <Loader2 className="animate-spin h-4 w-4" /> : <Save size={18} />}
-            SIMPAN PERUBAHAN
+            {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : <Save size={18} />}
+            SIMPAN UNIT
           </Button>
         </form>
       </DialogContent>
