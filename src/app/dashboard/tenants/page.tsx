@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
-import { TenantActions } from "@/components/shared/TenantActions"
+import { TenantActions } from "@/components/shared/tenants/TenantActions"
 import { Users, UserCheck } from "lucide-react"
 
 export default async function TenantsPage() {
