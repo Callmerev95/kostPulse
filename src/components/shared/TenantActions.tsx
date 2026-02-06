@@ -23,44 +23,45 @@ interface TenantActionsProps {
 }
 
 export function TenantActions({ tenantId, roomId, tenantName }: TenantActionsProps) {
-
   const handleCheckOut = async () => {
-    // Menggunakan toast.promise untuk UX yang lebih interaktif
-    toast.promise(checkOutTenant(tenantId, roomId), {
-      loading: `Sedang memproses check-out ${tenantName}...`,
+    const promise = checkOutTenant(tenantId, roomId)
+
+    toast.promise(promise, {
+      loading: `Memproses check-out ${tenantName}...`,
       success: (result) => {
-        if (result.error) throw new Error(result.error);
-        return `${tenantName} berhasil check-out. Kamar kini tersedia.`;
+        if (result?.error) throw new Error(result.error)
+        return `${tenantName} telah resmi meninggalkan unit.`;
       },
-      error: (err) => err.message || "Gagal melakukan check-out.",
-    });
-  };
+      error: (err) => err.message || "Gagal memproses check-out.",
+    })
+  }
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          variant="destructive"
+          variant="outline"
           size="sm"
-          className="flex items-center gap-2 transition-all active:scale-95"
+          className="bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20 hover:text-red-400 rounded-xl px-4 flex items-center gap-2 transition-all active:scale-95 ml-auto"
         >
-          <LogOut size={14} />
-          Check-out
+          <LogOut size={14} strokeWidth={2.5} /> Check-out
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-[#0A0A0A] border-white/10 rounded-[2rem] text-white">
         <AlertDialogHeader>
-          <AlertDialogTitle>Konfirmasi Check-out</AlertDialogTitle>
-          <AlertDialogDescription>
-            Apakah Anda yakin ingin mengeluarkan <strong>{tenantName}</strong>?
-            Tindakan ini akan menghapus semua data transaksi terkait dan status kamar akan kembali tersedia.
+          <AlertDialogTitle className="text-xl font-black text-red-500">Konfirmasi Akhir</AlertDialogTitle>
+          <AlertDialogDescription className="text-white/40">
+            Apakah Anda yakin ingin melakukan check-out pada <strong>{tenantName}</strong>?
+            Unit akan segera berstatus <span className="text-green-500 font-bold">Tersedia</span> kembali setelah proses ini selesai.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Batal</AlertDialogCancel>
+        <AlertDialogFooter className="gap-3">
+          <AlertDialogCancel className="bg-white/5 border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all">
+            Batal
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleCheckOut}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl border-none transition-all"
           >
             Ya, Check-out
           </AlertDialogAction>
