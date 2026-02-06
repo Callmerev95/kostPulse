@@ -37,7 +37,7 @@ export const generatePaymentMessage = (
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-  const text = `Halo Kak *${tenantName}*,\n\nKami dari *${kostName}* ingin menginfokan bahwa tagihan kost untuk periode *${months[month - 1]} ${year}* sebesar *${formatIDR}* sudah diterbitkan.\n\nKakak bisa melihat detail tagihan dan melakukan pembayaran melalui link resmi berikut:\n\n🔗 ${appUrl}/pay/${token}\n\nMohon untuk melakukan pembayaran sebelum jatuh tempo ya Kak. Terima kasih! 🙏`;
+  const text = `Halo Kak *${tenantName}*,\n\nKami dari *${kostName}* ingin menginfokan bahwa tagihan kost untuk periode *${months[month - 1]} ${year}* sebesar *${formatIDR}* sudah diterbitkan.\n\nKakak bisa melihat detail tagihan dan melakukan pembayaran melalui link resmi berikut:\n\n ${appUrl}/pay/${token}\n\nMohon untuk melakukan pembayaran sebelum jatuh tempo ya Kak. Terima kasih!`;
 
   return encodeURIComponent(text);
 };

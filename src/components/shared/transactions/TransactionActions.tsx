@@ -101,7 +101,7 @@ export function TransactionActions({ id, status, proofUrl, tenantName, isMobile 
               Verifikasi <span className="text-[#D4AF37]">Pembayaran?</span>
             </AlertDialogTitle>
             <AlertDialogDescription className="text-white/40 font-medium pt-2">
-              Pastikan saldo <span className="text-white font-bold tracking-tight">Rp {tenantName}</span> sudah masuk ke rekening. Tindakan ini tidak dapat dibatalkan.
+              Pastikan pembyaran <span className="text-white font-bold tracking-tight">{tenantName}</span> sudah masuk ke rekening. Tindakan ini tidak dapat dibatalkan.
             </AlertDialogDescription>
           </AlertDialogHeader>
 

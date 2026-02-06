@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
-import { UploadProofModal } from "@/components/shared/UploadProofModal"
+import { UploadProofModal } from "@/components/shared/pay/UploadProofModal"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
-import { PaymentInstructions } from "@/components/shared/PaymentInstructions"
+import { PaymentInstructions } from "@/components/shared/pay/PaymentInstructions"
+import { RealtimeRefresher } from "@/components/shared/RealTimeRefresher"
 import Image from "next/image"
 import { ShieldCheck, User, Home, Calendar, Wallet, Clock, CheckCircle2 } from "lucide-react"
 
@@ -50,6 +51,8 @@ export default async function PublicPaymentPage(props: { params: Promise<{ token
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#D4AF37]/5 blur-[120px] rounded-full" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full" />
       </div>
+
+      <RealtimeRefresher id={transaction.id} />
 
       <div className="w-full max-w-md relative animate-in fade-in zoom-in duration-700">
         {/* Main Card Container */}
@@ -108,7 +111,7 @@ export default async function PublicPaymentPage(props: { params: Promise<{ token
                     <div className="text-center px-6">
                       <p className="text-base font-black uppercase tracking-[0.2em]">Pembayaran Berhasil</p>
                       <p className="text-[10px] text-green-500/50 font-medium mt-2 leading-relaxed">
-                        Terima kasih, pembayaran Anda telah diverifikasi oleh Owner.
+                        Terima kasih, pembayaran Anda telah diverifikasi.
                       </p>
                     </div>
                   </div>

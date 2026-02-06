@@ -9,6 +9,7 @@ import { formatPhoneNumber, generatePaymentMessage } from "@/lib/whatsapp";
 import { MessageCircle, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { RealtimeRefresher } from "@/components/shared/RealTimeRefresher"
 
 export default async function TransactionsPage() {
   const cookieStore = await cookies()
@@ -46,6 +47,7 @@ export default async function TransactionsPage() {
         </div>
       </div>
 
+      <RealtimeRefresher />
       {/* 🖥️ Desktop View: Luxury Table */}
       <div className="hidden md:block bg-white/2 border border-white/5 rounded-[2rem] overflow-hidden backdrop-blur-sm shadow-2xl">
         <Table>
