@@ -1,7 +1,7 @@
 import { getRooms } from "@/actions/rooms";
-import { AddRoomForm } from "@/components/shared/AddRoomForm";
-import { RoomActions } from "@/components/shared/RoomActions";
-import { CheckInForm } from "@/components/shared/CheckInForm";
+import { AddRoomForm } from "@/components/shared/rooms/AddRoomForm";
+import { RoomActions } from "@/components/shared/rooms/RoomActions";
+import { CheckInForm } from "@/components/shared/rooms/CheckInForm";
 import {
   Table,
   TableBody,
