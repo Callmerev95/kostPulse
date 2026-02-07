@@ -1,8 +1,10 @@
+// src/app/dashboard/settings/page.tsx
 import { createServerClient } from "@supabase/ssr"
 import { prisma } from "@/lib/prisma"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { SettingsForm } from "@/components/shared/settings/SettingsForm"
+import { NotificationSettings } from "@/components/dashboard/NotificationSettings" // Import komponen baru
 import { CreditCard } from "lucide-react"
 
 export default async function SettingsPage() {
@@ -35,7 +37,7 @@ export default async function SettingsPage() {
   return (
     <div className="flex flex-col h-full min-h-0 animate-in fade-in duration-700 overflow-hidden">
 
-      {/* Header Section - shrink-0 agar statis di atas */}
+      {/* Header Section */}
       <div className="mb-8 shrink-0">
         <h1 className="text-3xl font-black tracking-tighter text-white">
           Sistem <span className="text-[#D4AF37]">Pengaturan</span>
@@ -45,11 +47,15 @@ export default async function SettingsPage() {
         </p>
       </div>
 
-      {/* Scrollable Form Area */}
+      {/* Scrollable Area */}
       <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-25">
-        <div className="max-w-2xl mx-auto md:mx-0">
+        <div className="max-w-2xl mx-auto md:mx-0 flex flex-col gap-6">
+
+          {/* Section 1: Push Notifications - Kita taruh di atas agar mudah diakses */}
+          <NotificationSettings />
+
+          {/* Section 2: Informasi Pembayaran */}
           <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8 backdrop-blur-sm relative overflow-hidden shadow-2xl mb-8">
-            {/* Subtle Decorative Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 blur-3xl rounded-full pointer-events-none" />
 
             <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/5">
@@ -62,9 +68,9 @@ export default async function SettingsPage() {
               </div>
             </div>
 
-            {/* Form Settings */}
             <SettingsForm initialData={user} userId={authUser.id} />
           </div>
+
         </div>
       </div>
     </div>
