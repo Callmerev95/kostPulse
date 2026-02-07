@@ -126,6 +126,10 @@
 
 @plugin 'tailwind-scrollbar';
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* Custom Scrollbar for Luxury Dark Theme */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
